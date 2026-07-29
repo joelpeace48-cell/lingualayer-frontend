@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
+import { EmptyState } from '@/components/empty-state';
+import { BountiesIllustration } from '@/components/illustrations';
 
 interface Commission {
   id: string;
@@ -79,10 +81,14 @@ export default function BountyBoardPage() {
       ) : (
         <div className="bounty-grid">
           {commissions.length === 0 ? (
-            <div className="bounty-empty">
-              <span>No open commissions yet.</span>
-              <p>Be the first AI company to commission African language data.</p>
-            </div>
+            <EmptyState
+              illustration={
+                <BountiesIllustration label="An empty signpost with a coin, no bounties posted" />
+              }
+              title="No bounties yet"
+              message="Be the first to commission African language data and put a bounty on the board."
+              cta={{ label: 'Explore datasets', href: '/datasets' }}
+            />
           ) : (
             commissions.map(c => (
               <article key={c.id} className="bounty-card">
