@@ -1,7 +1,21 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 import "./globals.css";
+
+// Applied before hydration so the correct theme paints on first frame
+// (no flash of the wrong palette). Kept tiny and inline rather than a
+// separate script file so it runs synchronously, before first paint.
+const noFlashThemeScript = `
+(function () {
+  try {
+    var stored = localStorage.getItem("ll-theme");
+    var theme = stored || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  } catch (e) {}
+})();
+`;
 
 export const metadata: Metadata = {
   metadataBase: new URL("http://localhost:3000"),
@@ -40,6 +54,9 @@ const nav = [
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: noFlashThemeScript }} />
+      </head>
       <body>
         <header className="nav">
           <div className="container nav-inner">
@@ -59,6 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link key={href} href={href}>{label}</Link>
               ))}
             </nav>
+            <ThemeToggle />
           </div>
         </header>
         <main className="container">{children}</main>
