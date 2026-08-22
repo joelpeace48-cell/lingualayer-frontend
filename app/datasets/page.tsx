@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo, type CSSProperties } from 'react';
 import { EmptyState } from '@/components/empty-state';
 import { DatasetsIllustration } from '@/components/illustrations';
+import { QualityBadge, type QualityTier } from '@/components/quality-badge';
 
 interface Dataset {
   dataset_id: string;
@@ -9,6 +10,8 @@ interface Dataset {
   language_code: string;
   owner: string;
   sample_count: number;
+  quality_tier?: QualityTier;
+  quality_score?: number;
 }
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1';
@@ -106,7 +109,10 @@ export default function DatasetsPage() {
         <div className="grid">
           {visible.map((d) => (
             <article key={d.dataset_id} className="card">
-              <h3>{d.name}</h3>
+              <div className="card-top-row">
+                <h3>{d.name}</h3>
+                <QualityBadge tier={d.quality_tier ?? 'Unrated'} score={d.quality_score} compact />
+              </div>
               <p>
                 {d.language_code.toUpperCase()} · {d.sample_count.toLocaleString()} samples
               </p>
