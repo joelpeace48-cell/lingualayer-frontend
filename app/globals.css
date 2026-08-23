@@ -486,3 +486,48 @@ a { color: inherit; text-decoration: none; }
   z-index: 30;
 }
 
+/* === quality attestation form === */
+.attestation-connect-hint {
+  color: var(--muted);
+  margin-top: 20px;
+}
+.attestation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 480px;
+  margin-top: 20px;
+}
+.attestation-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.attestation-field input,
+.attestation-field select,
+.attestation-field textarea {
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 85%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+}
+.attestation-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.attestation-preview-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.attestation-error { color: #f87171; font-size: 0.85rem; margin: 0; }
+.attestation-success { color: var(--accent); font-size: 0.85rem; margin: 0; }
+
