@@ -60,28 +60,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: noFlashThemeScript }} />
       </head>
       <body>
-        <header className="nav">
-          <div className="container nav-inner">
-            <Link href="/" className="brand brand-with-logo">
-              <Image
-                src="/icon.svg"
-                alt=""
-                width={38}
-                height={38}
-                className="nav-logo"
-                unoptimized
-              />
-              <span className="brand-text">LinguaLayer</span>
-            </Link>
-            <nav className="links">
-              {nav.map(([label, href]) => (
-                <Link key={href} href={href}>{label}</Link>
-              ))}
-            </nav>
-            <ThemeToggle />
-          </div>
-        </header>
-        <main className="container">{children}</main>
         <WalletProvider>
           <header className="nav">
             <div className="container nav-inner">
@@ -101,6 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <Link key={href} href={href}>{label}</Link>
                 ))}
               </nav>
+              <ThemeToggle />
               <WalletConnectButton />
             </div>
           </header>
