@@ -158,6 +158,95 @@ a { color: inherit; text-decoration: none; }
 .quality-badge--compact { padding: 4px 7px; }
 .quality-score { opacity: 0.85; font-weight: 600; }
 
+/* === governance voting === */
+.vote-filters {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0 8px;
+}
+.vote-filter-pill {
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.vote-filter-pill.active {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+.proposal-card p { margin: 8px 0 14px; }
+.proposal-state {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.proposal-state--active {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.proposal-state--passed {
+  color: #4ade80;
+  background: color-mix(in srgb, #4ade80 16%, transparent);
+}
+.proposal-state--rejected,
+.proposal-state--expired {
+  color: #f87171;
+  background: color-mix(in srgb, #f87171 16%, transparent);
+}
+.vote-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #f87171 25%, transparent);
+  overflow: hidden;
+}
+.vote-bar-for {
+  height: 100%;
+  background: var(--accent);
+}
+.vote-tally {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin: 6px 0 14px;
+}
+.proposal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.proposer {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-family: ui-monospace, monospace;
+}
+.vote-btn {
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vote-btn:disabled { opacity: 0.6; cursor: default; }
+.vote-btn--against {
+  border-color: color-mix(in srgb, #f87171 45%, transparent);
+  background: color-mix(in srgb, #f87171 14%, transparent);
+  color: #f87171;
+}
+
 .section {
   padding: 24px 0 40px;
 }
