@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { WalletProvider } from "@/contexts/WalletContext";
 import { WalletConnectButton } from "@/components/wallet-connect-button";
+import { NetworkBanner } from "@/components/network-banner";
+import { NetworkMismatchModal } from "@/components/network-mismatch-modal";
 import "./globals.css";
 
 // Applied before hydration so the correct theme paints on first frame
@@ -69,29 +71,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: noFlashThemeScript }} />
       </head>
       <body>
-        <header className="nav">
-          <div className="container nav-inner">
-            <Link href="/" className="brand brand-with-logo">
-              <Image
-                src="/icon.svg"
-                alt=""
-                width={38}
-                height={38}
-                className="nav-logo"
-                unoptimized
-              />
-              <span className="brand-text">LinguaLayer</span>
-            </Link>
-            <nav className="links">
-              {nav.map(([label, href]) => (
-                <Link key={href} href={href}>{label}</Link>
-              ))}
-            </nav>
-            <ThemeToggle />
-          </div>
-        </header>
-        <main className="container">{children}</main>
         <WalletProvider>
+          <NetworkBanner />
+          <NetworkMismatchModal />
           <header className="nav">
             <div className="container nav-inner">
               <Link href="/" className="brand brand-with-logo">
@@ -110,6 +92,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <Link key={href} href={href}>{label}</Link>
                 ))}
               </nav>
+              <ThemeToggle />
               <WalletConnectButton />
             </div>
           </header>

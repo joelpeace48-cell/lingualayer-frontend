@@ -4,6 +4,7 @@ out/
 coverage/
 *.log
 .env*
+!.env.example
 
 # TypeScript build info
 *.tsbuildinfo
