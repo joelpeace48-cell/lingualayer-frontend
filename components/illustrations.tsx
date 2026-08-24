@@ -95,3 +95,15 @@ export function RoyaltiesIllustration(props: IllustrationProps) {
     </Frame>
   );
 }
+
+/** Empty governance — a ballot box with a dashed slot, "no proposals yet". */
+export function GovernanceIllustration(props: IllustrationProps) {
+  return (
+    <Frame {...props}>
+      <rect x="36" y="52" width="48" height="34" rx="6" className="empty-art__fill" />
+      <path d="M60 40v14" strokeDasharray="3 5" />
+      <path d="M50 52l10-12 10 12" />
+      <path d="M46 68h28" />
+    </Frame>
+  );
+}
