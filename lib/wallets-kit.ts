@@ -11,6 +11,11 @@
  * https://cloud.reown.com) — its own QR-code-with-copy-link UI is provided by
  * @reown/appkit, the underlying SDK, rather than reimplemented here.
  * Hardware wallets (Ledger) need a Buffer polyfill and are added by #21.
+ * (Freighter, xBull, Lobstr, Hana, Rabet, Albedo, ...). Ledger is added on
+ * top via WebUSB — the SDK's own isAvailable() check already hides it from
+ * the picker on browsers without WebUSB support (Firefox, Safari), so no
+ * extra feature-detection is needed here. WalletConnect needs its own extra
+ * setup (a project id) and is added by #20.
  *
  * The SDK is loaded via a dynamic `import()` inside `getKit()` rather than a
  * static top-level import: one of its internal state modules reads
@@ -25,6 +30,17 @@ const NETWORK_ENV =
 let kitPromise: Promise<typeof import("@creit.tech/stellar-wallets-kit").StellarWalletsKit> | null = null;
 
 const WALLETCONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+/**
+ * The Ledger module (via @ledgerhq/hw-transport-webusb) assumes a Node-style
+ * global `Buffer`, which browsers don't have. Polyfilled lazily, right before
+ * the module is constructed, rather than globally in next.config.ts, so
+ * pages that never touch the wallet kit don't pay for it.
+ */
+async function ensureBufferPolyfill(): Promise<void> {
+  if (typeof window === "undefined" || (window as typeof window & { Buffer?: unknown }).Buffer) return;
+  const { Buffer } = await import("buffer");
+  (window as typeof window & { Buffer: typeof Buffer }).Buffer = Buffer;
+}
 
 async function getKit() {
   if (!kitPromise) {
@@ -57,6 +73,13 @@ async function getKit() {
       }
 
       StellarWalletsKit.init({ modules, network });
+      await ensureBufferPolyfill();
+      const { LedgerModule } = await import("@creit.tech/stellar-wallets-kit/modules/ledger");
+
+      StellarWalletsKit.init({
+        modules: [...defaultModules(), new LedgerModule()],
+        network: NETWORK_ENV === "mainnet" ? Networks.PUBLIC : Networks.TESTNET,
+      });
       return StellarWalletsKit;
     })();
   }
