@@ -1,8 +1,10 @@
 'use client';
 import { useState, useEffect, useMemo, type CSSProperties } from 'react';
+import Link from 'next/link';
 import { EmptyState } from '@/components/empty-state';
 import { DatasetsIllustration } from '@/components/illustrations';
 import { QualityBadge, type QualityTier } from '@/components/quality-badge';
+import { ShareButtons } from '@/components/share-buttons';
 
 interface Dataset {
   dataset_id: string;
@@ -108,7 +110,12 @@ export default function DatasetsPage() {
       ) : (
         <div className="grid">
           {visible.map((d) => (
-            <article key={d.dataset_id} className="card">
+            <Link
+              key={d.dataset_id}
+              href={`/datasets/${d.dataset_id}`}
+              className="card"
+              style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
+            >
               <div className="card-top-row">
                 <h3>{d.name}</h3>
                 <QualityBadge tier={d.quality_tier ?? 'Unrated'} score={d.quality_score} compact />
@@ -116,6 +123,13 @@ export default function DatasetsPage() {
               <p>
                 {d.language_code.toUpperCase()} · {d.sample_count.toLocaleString()} samples
               </p>
+            </Link>
+              {d.quality_tier === 'Platinum' && (
+                <ShareButtons
+                  text={`${d.name} just reached Platinum quality on @LinguaLayer! 🌍🎙️ Join us in building the future of African AI.`}
+                  ogParams={{ lang: d.language_code.toUpperCase(), tier: 'Platinum' }}
+                />
+              )}
             </article>
           ))}
         </div>

@@ -3,6 +3,7 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { EmptyState } from '@/components/empty-state';
 import { BountiesIllustration } from '@/components/illustrations';
+import { ShareButtons } from '@/components/share-buttons';
 
 interface Commission {
   id: string;
@@ -189,6 +190,12 @@ export default function BountyBoardPage() {
                     </button>
                   )}
                 </div>
+                {c.state === 'fulfilled' && (
+                  <ShareButtons
+                    text={`I just earned $${c.bounty_usdc.toLocaleString()} USDC by contributing ${LANGUAGE_NAMES[c.language_code] ?? c.language_code} speech data on @LinguaLayer! 🌍🎙️ Join us in building the future of African AI.`}
+                    ogParams={{ lang: LANGUAGE_NAMES[c.language_code] ?? c.language_code, amount: String(c.bounty_usdc) }}
+                  />
+                )}
               </article>
             ))
           )}

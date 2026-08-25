@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { WalletProvider } from "@/contexts/WalletContext";
 import { WalletConnectButton } from "@/components/wallet-connect-button";
+import { NetworkBanner } from "@/components/network-banner";
+import { NetworkMismatchModal } from "@/components/network-mismatch-modal";
 import "./globals.css";
 
 // Applied before hydration so the correct theme paints on first frame
@@ -42,6 +44,14 @@ export const metadata: Metadata = {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     shortcut: "/icon.svg",
   },
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf6ee" },
+    { media: "(prefers-color-scheme: dark)", color: "#08110b" },
+  ],
 };
 
 const nav = [
@@ -52,6 +62,7 @@ const nav = [
   ["Attestations", "/attestations"],
   ["Roadmap", "/roadmap"],
   ["Docs", "/docs"],
+  ["Wallets", "/wallets"],
 ] as const;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -62,6 +73,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <WalletProvider>
+          <NetworkBanner />
+          <NetworkMismatchModal />
           <header className="nav">
             <div className="container nav-inner">
               <Link href="/" className="brand brand-with-logo">
