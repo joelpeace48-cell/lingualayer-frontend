@@ -62,6 +62,7 @@ const nav = [
   ["Attestations", "/attestations"],
   ["Roadmap", "/roadmap"],
   ["Docs", "/docs"],
+  ["Wallets", "/wallets"],
 ] as const;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
