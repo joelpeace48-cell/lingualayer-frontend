@@ -604,6 +604,38 @@ a { color: inherit; text-decoration: none; }
   font-style: normal;
   opacity: 0.7;
 }
+/* Dataset detail — royalty economics card (issue #23). */
+.economics-card {
+  padding: 20px;
+}
+.economics-rows {
+  margin: 14px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.economics-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.economics-row dt {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.economics-row dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+.economics-row--total {
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.economics-row--total dd {
+  color: var(--accent);
+}
 /* Social sharing (issue #28). */
 .share-buttons {
   display: flex;
