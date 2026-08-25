@@ -574,6 +574,36 @@ a { color: inherit; text-decoration: none; }
   white-space: normal;
   z-index: 30;
 }
+/* Testnet contract-address banner (issue #24). */
+.network-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 8px 20px;
+  background: color-mix(in srgb, #f59e0b 16%, var(--bg));
+  border-bottom: 1px solid color-mix(in srgb, #f59e0b 35%, transparent);
+  font-size: 0.78rem;
+}
+.network-banner-tag {
+  font-weight: 700;
+  color: #f59e0b;
+  white-space: nowrap;
+}
+.network-banner-contracts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  color: var(--muted);
+}
+.network-banner-contract a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.network-banner-contract em {
+  font-style: normal;
+  opacity: 0.7;
+}
 /* Dataset detail — royalty economics card (issue #23). */
 .economics-card {
   padding: 20px;
