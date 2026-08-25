@@ -1,8 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { EmptyState } from '@/components/empty-state';
 import { BountiesIllustration } from '@/components/illustrations';
+import { ShareButtons } from '@/components/share-buttons';
 
 interface Commission {
   id: string;
@@ -26,19 +27,91 @@ const LANGUAGE_NAMES: Record<string, string> = {
   tir: 'Tigrinya', aka: 'Akan', ven: 'Venda',
 };
 
+interface PostCommissionForm {
+  language_code: string;
+  bounty_usdc: string;
+  min_sample_count: string;
+  min_duration_hours: string;
+  description: string;
+}
+
+const EMPTY_FORM: PostCommissionForm = {
+  language_code: 'yor',
+  bounty_usdc: '',
+  min_sample_count: '',
+  min_duration_hours: '',
+  description: '',
+};
+
 export default function BountyBoardPage() {
   const [commissions, setCommissions] = useState<Commission[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'open' | 'all'>('open');
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [form, setForm] = useState<PostCommissionForm>(EMPTY_FORM);
+  const [posting, setPosting] = useState(false);
+  const [postError, setPostError] = useState<string | null>(null);
+  const [claimingId, setClaimingId] = useState<string | null>(null);
   const { connection } = useWallet();
 
   useEffect(() => {
+    setLoading(true);
     fetch(`${API}/commissions?state=${filter}`)
       .then(r => r.json())
       .then(d => setCommissions(d.items ?? []))
       .catch(() => setCommissions([]))
       .finally(() => setLoading(false));
   }, [filter]);
+
+  async function submitCommission(e: FormEvent) {
+    e.preventDefault();
+    if (!connection) return;
+    setPosting(true);
+    setPostError(null);
+    try {
+      const res = await fetch(`${API}/commissions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          language_code: form.language_code,
+          bounty_usdc: Number(form.bounty_usdc),
+          min_sample_count: Number(form.min_sample_count),
+          min_duration_hours: Number(form.min_duration_hours),
+          description_ipfs: form.description,
+          commissioner: connection.address,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to post commission');
+      const created: Commission = await res.json();
+      setCommissions((prev) => [created, ...prev]);
+      setShowPostModal(false);
+      setForm(EMPTY_FORM);
+    } catch (err) {
+      setPostError(err instanceof Error ? err.message : 'Failed to post commission');
+    } finally {
+      setPosting(false);
+    }
+  }
+
+  async function claimBounty(commission: Commission) {
+    if (!connection) return;
+    setClaimingId(commission.id);
+    try {
+      const res = await fetch(`${API}/commissions/${commission.id}/claim`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ claimer: connection.address }),
+      });
+      if (!res.ok) throw new Error('Failed to claim bounty');
+      setCommissions((prev) =>
+        prev.map((c) => (c.id === commission.id ? { ...c, state: 'fulfilled' } : c)),
+      );
+    } catch {
+      // Left as an open bounty on failure so the contributor can retry.
+    } finally {
+      setClaimingId(null);
+    }
+  }
 
   return (
     <div className="bounty-board">
@@ -51,7 +124,7 @@ export default function BountyBoardPage() {
           </p>
         </div>
         {connection && (
-          <button className="cta" id="post-commission-btn">
+          <button className="cta" id="post-commission-btn" onClick={() => setShowPostModal(true)}>
             Post a Commission
           </button>
         )}
@@ -107,14 +180,93 @@ export default function BountyBoardPage() {
                     by {c.commissioner_truncated}
                   </span>
                   {c.state === 'open' && connection && (
-                    <button className="cta-sm" id={`claim-${c.id}`}>
-                      Claim Bounty
+                    <button
+                      className="cta-sm"
+                      id={`claim-${c.id}`}
+                      disabled={claimingId === c.id}
+                      onClick={() => claimBounty(c)}
+                    >
+                      {claimingId === c.id ? 'Claiming…' : 'Claim Bounty'}
                     </button>
                   )}
                 </div>
+                {c.state === 'fulfilled' && (
+                  <ShareButtons
+                    text={`I just earned $${c.bounty_usdc.toLocaleString()} USDC by contributing ${LANGUAGE_NAMES[c.language_code] ?? c.language_code} speech data on @LinguaLayer! 🌍🎙️ Join us in building the future of African AI.`}
+                    ogParams={{ lang: LANGUAGE_NAMES[c.language_code] ?? c.language_code, amount: String(c.bounty_usdc) }}
+                  />
+                )}
               </article>
             ))
           )}
+        </div>
+      )}
+
+      {showPostModal && (
+        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Post a commission">
+          <form className="modal-card" onSubmit={submitCommission}>
+            <h3>Post a commission</h3>
+            <label className="modal-field">
+              Language
+              <select
+                value={form.language_code}
+                onChange={(e) => setForm({ ...form, language_code: e.target.value })}
+              >
+                {Object.entries(LANGUAGE_NAMES).map(([code, name]) => (
+                  <option key={code} value={code}>{name}</option>
+                ))}
+              </select>
+            </label>
+            <label className="modal-field">
+              Bounty (USDC)
+              <input
+                type="number"
+                min="1"
+                required
+                value={form.bounty_usdc}
+                onChange={(e) => setForm({ ...form, bounty_usdc: e.target.value })}
+              />
+            </label>
+            <label className="modal-field">
+              Minimum samples
+              <input
+                type="number"
+                min="1"
+                required
+                value={form.min_sample_count}
+                onChange={(e) => setForm({ ...form, min_sample_count: e.target.value })}
+              />
+            </label>
+            <label className="modal-field">
+              Minimum audio hours
+              <input
+                type="number"
+                min="1"
+                required
+                value={form.min_duration_hours}
+                onChange={(e) => setForm({ ...form, min_duration_hours: e.target.value })}
+              />
+            </label>
+            <label className="modal-field">
+              Requirements description
+              <textarea
+                required
+                rows={3}
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                placeholder="Recording conditions, dialect coverage, licensing terms…"
+              />
+            </label>
+            {postError && <p className="modal-error">{postError}</p>}
+            <div className="modal-actions">
+              <button type="button" className="cta-secondary" onClick={() => setShowPostModal(false)}>
+                Cancel
+              </button>
+              <button type="submit" className="cta-sm" disabled={posting}>
+                {posting ? 'Posting…' : 'Post commission'}
+              </button>
+            </div>
+          </form>
         </div>
       )}
     </div>
