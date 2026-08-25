@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { EmptyState } from '@/components/empty-state';
 import { DatasetsIllustration } from '@/components/illustrations';
 import { QualityBadge, type QualityTier } from '@/components/quality-badge';
+import { ShareButtons } from '@/components/share-buttons';
 
 interface Dataset {
   dataset_id: string;
@@ -123,6 +124,13 @@ export default function DatasetsPage() {
                 {d.language_code.toUpperCase()} · {d.sample_count.toLocaleString()} samples
               </p>
             </Link>
+              {d.quality_tier === 'Platinum' && (
+                <ShareButtons
+                  text={`${d.name} just reached Platinum quality on @LinguaLayer! 🌍🎙️ Join us in building the future of African AI.`}
+                  ogParams={{ lang: d.language_code.toUpperCase(), tier: 'Platinum' }}
+                />
+              )}
+            </article>
           ))}
         </div>
       )}
